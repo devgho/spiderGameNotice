@@ -12,3 +12,4 @@ class GamenoticeItem(scrapy.Item):
     title = scrapy.Field()
     url = scrapy.Field()
     dtime = scrapy.Field()
+    detail = scrapy.Field()

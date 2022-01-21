@@ -22,7 +22,7 @@ class GamenoticePipeline:
             pass
         else:
             url = "https://oapi.dingtalk.com/robot/send?access_token=3ce7a6e1c237c06473f9b0f8b226c2428f9ff4d02a5cf73584e38d07beafc23c"
-            message = f"### {spider.name}更新啦 时间:{item['dtime']} \n > {item['detail'][:30]}...  [点击查看详情]({item['url']})"""
+            message = f"### {spider.name}更新啦 时间:{item['dtime']} \n > {item['detail'][:200]}...  [点击查看详情]({item['url']})"""
             data = {
                 "msgtype":"markdown",
                 "markdown":{

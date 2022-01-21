@@ -1,24 +1,32 @@
-from telnetlib import GA
 import scrapy
-import json
+import json,re
 from gamenotice.items import GamenoticeItem
-import time
-import re
 
 
 class SgzSpider(scrapy.Spider):
     name = 'sgz'
-    allowed_domains = ['taptap.com']
-    start_urls = ['https://www.taptap.com/webapiv2/apk/v1/list-by-app?app_id=139546&X-UA=V%3D1%26PN%3DWebApp%26LANG%3Dzh_CN%26VN_CODE%3D59%26VN%3D0.1.0%26LOC%3DCN%26PLT%3DPC%26DS%3DAndroid%26UID%3D807d4770-751d-49c0-b49a-6ea259fecd72%26DT%3DPC']
+    allowed_domains = ['sgzzlb.lingxigames.com','sapi.aligames.com']
+    
+    def start_requests(self):
+        url = "https://sapi.aligames.com/ds/ajax/endpoint.json"
+        data = {"api":"/api/l/owresource/getListRecommend","params":{"gameId":10000100,"collectionIds":"129,143,128,736,142,194","orderCode":1,"orderDesc": True,"page":0,"size":20}}
+        yield scrapy.FormRequest(url, method="POST", body=json.dumps(data), headers={'Content-Type': 'application/json'},callback=self.parse)
 
     def parse(self, response):
         rs = json.loads(response.text)
-        if rs['success'] == True:
-            newest = rs['data']['list'][0]
-            item = GamenoticeItem()
-            item['url'] = "https://www.taptap.com/app/139546/"
-            item['title'] = newest['version_label']
-            item['detail'] = re.sub("<.*?>","",newest['whatsnew']['text'])
-            timeArray = time.localtime(newest['update_date'])
-            item['dtime'] = time.strftime("%Y-%m-%d %H:%M:%S",timeArray)
-            yield item
+        if bool(rs['success']) == True:
+            rlist = rs['result']['list']
+            for i in rlist:
+                if "维护" in i['title'] or "更新" in i['title']:
+                    item = GamenoticeItem()
+                    item['title'] = i['title']
+                    item['url'] = "https://sgzzlb.lingxigames.com/news/article/?id="+str(i['id'])
+                    item['dtime'] = i['mtime']
+                    data = {"api": "/api/l/owresource/getInfoDetail", "params": {"gameId": i['gameId'], "id": i['id']}}
+                    return scrapy.FormRequest(response.url, method="POST", headers={"Content-Type":"application/json"} ,body=json.dumps(data), callback=self.detail_parse, meta=item)
+    
+    def detail_parse(self, response):
+        rs = json.loads(response.text)
+        if bool(rs['success'] == True):
+            response.meta['detail'] = re.sub("<.*?>","",rs['result']['content'])
+            return response.meta

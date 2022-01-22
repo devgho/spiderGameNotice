@@ -3,10 +3,16 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import encodings
+from selenium.webdriver import ChromeOptions
+from wsgiref.util import request_uri
+import scrapy
 from scrapy import signals
+from selenium import webdriver
+import time
+
 
 # useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
 
 
 class GamenoticeSpiderMiddleware:
@@ -87,6 +93,19 @@ class GamenoticeDownloaderMiddleware:
         # - return a Response object
         # - return a Request object
         # - or raise IgnoreRequest
+        load_list = []
+        for i in load_list:
+            if i in response.url:
+                chrome_options = ChromeOptions()
+                # chrome_options.add_argument("--headless")
+                # chrome_options.add_argument('--disable-gpu')
+                # chrome_options.add_argument('--no-sandbox') 
+                driver = webdriver.Chrome(chrome_options=chrome_options,executable_path='D:\Programs\chromedriver.exe')
+                driver.get(response.url)
+                driver.implicitly_wait(10)
+                body = driver.page_source
+                driver.quit()
+                return scrapy.http.HtmlResponse(url=request.url, body=body.encode('utf-8'), request=request)
         return response
 
     def process_exception(self, request, exception, spider):

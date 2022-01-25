@@ -9,9 +9,9 @@ process = CrawlerProcess(get_project_settings())
 spider_loader = SpiderLoader(get_project_settings())
 
 # 添加需要执行的爬虫
-# for spidername in spider_loader.list():
-    # process.crawl(spidername)
-process.crawl("sgs")
+for spidername in spider_loader.list():
+    process.crawl(spidername)
+# process.crawl("sgs")
 
 # 执行
 process.start()

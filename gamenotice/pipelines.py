@@ -25,7 +25,7 @@ class GamenoticePipeline:
             pass
         elif self.old_dtime < new_dtime:
             url = "https://oapi.dingtalk.com/robot/send?access_token=45e040c0bd4ece2dbee76e714cfde47655bd2628dc58ed93697e57eedbaf3f43"
-            message = f"### {spider.name}更新啦 时间:{item['dtime']} \n > {item['detail'][:70]}...  [点击查看详情]({item['url']})"""
+            message = f"### {spider.name}更新啦 发布时间:{item['dtime']} \n > {item['detail'][:70]}...  [点击查看详情]({item['url']})"""
             data = {
                 "msgtype":"markdown",
                 "markdown":{

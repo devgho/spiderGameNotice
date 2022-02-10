@@ -17,10 +17,10 @@ class YsSpider(scrapy.Spider):
 
     def detail_parse(self, response):
         rs = json.loads(response.text)
-        if rs["message"] == "操作成功" and (("更新" or "维护") in rs['data']['title']):
+        if rs["message"] == "操作成功" and (("更新通知" or "维护通知") in rs['data']['title']):
             item = GamenoticeItem()
             item['title'] = rs["data"]['title']
             item['url'] = "https://ys.mihoyo.com/main/news/detail/"+rs['data']['contentId']
             item['dtime'] = rs['data']['start_time']
-            item['detail'] = re.sub(r'<.*?>',"",rs['data']['content'])
+            item['detail'] = re.search(r"更新时间.*?。",re.sub(r'<.*?>',"",rs['data']['content']),re.S).group()
             return item

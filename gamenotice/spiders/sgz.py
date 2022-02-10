@@ -9,7 +9,7 @@ class SgzSpider(scrapy.Spider):
     
     def start_requests(self):
         url = "https://sapi.aligames.com/ds/ajax/endpoint.json"
-        data = {"api":"/api/l/owresource/getListRecommend","params":{"gameId":10000100,"collectionIds":"129,143,128,736,142,194","orderCode":1,"orderDesc": True,"page":0,"size":20}}
+        data = {"api":"/api/l/owresource/getListRecommend","params":{"gameId":10000100,"collectionIds":"129,143,128,736,142,194","orderCode":1,"orderDesc": True,"page":1,"size":20}}
         yield scrapy.FormRequest(url, method="POST", body=json.dumps(data), headers={'Content-Type': 'application/json'},callback=self.parse)
 
     def parse(self, response):
@@ -28,5 +28,5 @@ class SgzSpider(scrapy.Spider):
     def detail_parse(self, response):
         rs = json.loads(response.text)
         if bool(rs['success'] == True):
-            response.meta['detail'] = re.sub("<.*?>","",rs['result']['content'])
+            response.meta['detail'] = re.search(r"服务器将于.*?，",re.sub("<.*?>","",rs['result']['content'])).group()
             return response.meta

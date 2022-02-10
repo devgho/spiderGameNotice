@@ -10,7 +10,7 @@ class SgsSpider(scrapy.Spider):
     def parse(self, response):
         news_list = response.xpath('//*[@id="innerPress"]')
         if news_list.get():
-            p = news_list.xpath('li/a/p[contains(string(),"更新") or contains(string(),"维护")]')
+            p = news_list.xpath('li/a/p[contains(string(),"停服") or contains(string(),"维护")]')
             if p.get():
                 url = p.xpath('../@href').get()
                 return scrapy.Request(url,callback=self.detail_parse)
@@ -22,6 +22,6 @@ class SgsSpider(scrapy.Spider):
         item['title'] = response.xpath('//div[@class="art-title"]/text()').get()
         item['url'] = response.url
         item['dtime'] = response.xpath('//p[@class="art-time"]/text()').get().replace("时间：","")
-        item['detail'] = re.sub(r"<.*?>","",response.xpath('//div[@class="art-info"]').get())
+        item['detail'] = re.search(r"我们计划于.*?，",re.sub(r"<.*?>，","",response.xpath('//div[@class="art-info"]').get())).group()
         
         return item

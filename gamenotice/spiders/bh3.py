@@ -19,5 +19,5 @@ class Bh3Spider(scrapy.Spider):
 
     
     def detail_parse(self, response):
-        response.meta['detail'] = re.sub(r"<.*?>","",response.xpath("//div[@class='article__bd']").get())
+        response.meta['detail'] = re.search(r"维护时间.*?。",re.sub(r"<.*?>","",response.xpath("//div[@class='article__bd']").get()),re.S).group() 
         return response.meta

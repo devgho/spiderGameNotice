@@ -1,6 +1,7 @@
 import scrapy
 from gamenotice.items import GamenoticeItem
 from datetime import datetime
+import re
 
 
 class HpyjSpider(scrapy.Spider):
@@ -20,5 +21,5 @@ class HpyjSpider(scrapy.Spider):
 
         
     def detail_parse(self, response): 
-        response.meta['item']['detail'] = ''.join(response.xpath('//div[@class="article-box"]/p[position()<3]/text()').getall())
+        response.meta['item']['detail'] = re.search(".*?。",''.join(response.xpath('//div[@class="article-box"]/p[position()<3]/text()').getall())).group()
         return response.meta['item']
